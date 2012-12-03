@@ -9,7 +9,7 @@
     "url": "git://github.com/exfm/node-salsify.git"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "./node_modules/.bin/mocha"
   },
   "dependencies": {
     "nconf": "0.6.5",
@@ -17,7 +17,7 @@
     "node-uuid": "1.4.0"
   },
   "devDependencies": {
-    "mocha": "1.4.1"
+    "mocha": "1.7.3"
   },
   "optionalDependencies": {},
   "engines": {
