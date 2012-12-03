@@ -1,8 +1,8 @@
 {
   "author": "Lucas Hrabovsky <lucas@ex.fm>",
   "name": "salsify",
-  "description": "",
-  "version": "0.0.0",
+  "description": "Like celery for node.js.",
+  "version": "0.0.1",
   "homepage": "http://github.com/exfm/node-salsify",
   "repository": {
     "type": "git",

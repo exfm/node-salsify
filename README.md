@@ -35,7 +35,7 @@ More backends will be added as needed.
         done();
     }).use('sqs');
 
-    // ... Some app code and stuff...
+    // ... Some app code and stuff ...
     function doSomethingLater(){
         salsify.delay('myqueue', {'a': 'Any object you want'});
     }
