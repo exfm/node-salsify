@@ -2,88 +2,88 @@
 
 var util = require('util'),
     EventEmitter = require('events').EventEmitter,
-    aws = require('plata');
+    backends = require('./lib/backends');
 
 function Salsify(){
     this.ready = false;
 
+    this.backend = backends.sqs;
+
     this.key = undefined;
     this.secret = undefined;
-    this.queues = {};
 }
 util.inherits(Salsify, EventEmitter);
 
-Salsify.prototype.configure = function(cb){
-    var self = this;
-    cb.apply(this, [function(){
-        aws.connect({'key': self.key, 'secret': self.secret});
-        aws.onConnected(function(){
-            self.ready = true;
-            self.emit('ready');
-        });
-    }]);
+Salsify.prototype.use = function(backend){
+    this.backend = backends[backend];
     return this;
 };
 
-Salsify.prototype.getQueue = function(queue){
-    if(!this.queues.hasOwnProperty(queue)){
-        this.queues[queue] = aws.sqs.Queue(queue);
+Salsify.prototype.configure = function(cb){
+    var isSync = cb.length === 0,
+        self = this;
+
+    function done(){
+        self.backend.configure(self, function(){
+            self.ready = true;
+            self.emit('ready');
+        });
     }
-    return this.queues[queue];
+    if(isSync){
+        cb.apply(this, []);
+        done();
+    }
+    else{
+        cb.apply(this, [done]);
+    }
+    return this;
 };
 
 Salsify.prototype.delay = function(queue, data){
-    if(!this.queues.hasOwnProperty(queue)){
-        this.queues[queue] = aws.sqs.Queue(queue);
+    if(!this.ready){
+        this.on('ready', this.delay(queue, data).bind(this));
     }
-    this.queues[queue].put(data);
+    else{
+        this.backend.put(queue, data);
+    }
     return this;
 };
 
 var salsify = module.exports = new Salsify();
+module.exports.Salsify = Salsify;
 
-function Worker(){
-    this.queue = undefined;
-    this.listening = false;
+
+function Worker(parent){
     this.message = undefined;
+    this.salsify = parent || salsify;
 }
 util.inherits(Worker, EventEmitter);
 
 Worker.prototype.startListening = function(queue){
     var self = this;
-    this.queue = salsify.getQueue(queue);
-
-    this.queue.on('message', function(message){
-        self.message = message;
-        self.queue.close();
-        self.listening = false;
-
-        self.emit('job', message.body, function(err, result){
-            self.handleJobResult(err, result);
-            self.queue.listen(100);
-            self.listening = true;
+    this.salsify.backend.listen(queue, function(){
+        self.salsify.backend.on('job', function(data, cb){
+            self.emit('job', data, function(err, result){
+                cb(err, result);
+                if(err){
+                    self.emit('error', err);
+                }
+                else{
+                    self.emit('success', result);
+                }
+            });
         });
     });
-};
-
-Worker.prototype.handleJobResult = function(err, result){
-    if(err){
-        this.emit('error', err, this.message);
-        this.message.rettry();
-    }
-    else{
-        this.message.ack();
-        this.emit('success', result, this.message);
-    }
+    return this;
 };
 
 Worker.prototype.listen = function(queue){
     var self = this;
-    if(salsify.ready){
+    if(this.salsify.ready){
         self.startListening(queue);
     }
     else{
-        salsify.on('ready', function(){
+        this.salsify.on('ready', function(){
             self.startListening(queue);
         });
     }
@@ -91,8 +91,7 @@ Worker.prototype.listen = function(queue){
 };
 
 Worker.prototype.close = function(){
-    this.queue.close();
-    this.listening = false;
+    this.backend.close();
 };
 
 module.exports.Worker = Worker;
