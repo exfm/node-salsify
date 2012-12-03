@@ -2,8 +2,7 @@
 
 var assert = require('assert'),
     salsify = require('../'),
-    fs = require('fs'),
-    config = JSON.parse(fs.readFileSync(__dirname + '/auth.json'));
+    fs = require('fs');
 
 describe('Salsify', function(){
     it("should fire a ready event after configured", function(done){
