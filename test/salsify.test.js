@@ -13,10 +13,7 @@ describe('Salsify', function(){
                 done();
             })
             .use("memory")
-            .configure(function(){
-                this.key = config.key;
-                this.secret = config.secret;
-            });
+            .configure(function(){});
     });
 
     it("should work with a simple in memory backend", function(done){
@@ -25,23 +22,40 @@ describe('Salsify', function(){
                 assert(this.backend.type === "memory");
             })
             .use("memory")
-            .configure(function(){
-                this.key = config.key;
-                this.secret = config.secret;
-            }),
+            .configure(function(){}),
             worker = new salsify.Worker(s)
                 .on('job', function(data, d){
-                    d(null, true);
+                    d(null, "test 2");
                 })
                 .on('success', function(result){
                     assert(result);
                     done();
                 })
-                .on('error', function(err){
-                    done(err);
-                })
                 .listen('test');
 
         s.delay('test', {'ello': 'orld'});
+    });
+
+    it("should retry if an error is thrown", function(done){
+        var s = new salsify.Salsify()
+            .on('ready', function(){
+                assert(this.backend.type === "memory");
+            })
+            .use("memory")
+            .configure(function(){}),
+            worker = new salsify.Worker(s)
+                .on('job', function(data, d){
+                    throw new Error("Bahhhhhhhh");
+                })
+                .on('success', function(result){
+                    done(assert.fail());
+                })
+                .on('error', function(err){
+                    assert(err.message === 'Bahhhhhhhh');
+                    done();
+                })
+                .listen('test');
+
+        s.delay('test', {'Hello': 'World'});
     });
 });

@@ -7,7 +7,7 @@ var util = require('util'),
 function Salsify(){
     this.ready = false;
 
-    this.backend = backends.sqs;
+    this.backend = new backends.sqs();
 
     this.key = undefined;
     this.secret = undefined;
@@ -15,7 +15,7 @@ function Salsify(){
 util.inherits(Salsify, EventEmitter);
 
 Salsify.prototype.use = function(backend){
-    this.backend = backends[backend];
+    this.backend = new backends[backend]();
     return this;
 };
 
@@ -63,15 +63,20 @@ Worker.prototype.startListening = function(queue){
     var self = this;
     this.salsify.backend.listen(queue, function(){
         self.salsify.backend.on('job', function(data, cb){
-            self.emit('job', data, function(err, result){
-                cb(err, result);
-                if(err){
-                    self.emit('error', err);
-                }
-                else{
-                    self.emit('success', result);
-                }
-            });
+            try{
+                self.emit('job', data, function(err, result){
+                    cb(err, result);
+                    if(err){
+                        self.emit('error', err);
+                    }
+                    else{
+                        self.emit('success', result);
+                    }
+                });
+            }
+            catch(e){
+                self.emit('error', e);
+            }
         });
     });
     return this;
