@@ -18,9 +18,6 @@ describe('Salsify', function(){
 
     it("should work with a simple in memory backend", function(done){
         var s = new salsify.Salsify()
-            .on('ready', function(){
-                assert(this.backend.type === "memory");
-            })
             .use("memory")
             .configure(function(){}),
             worker = new salsify.Worker(s)
@@ -38,9 +35,6 @@ describe('Salsify', function(){
 
     it("should retry if an error is thrown", function(done){
         var s = new salsify.Salsify()
-            .on('ready', function(){
-                assert(this.backend.type === "memory");
-            })
             .use("memory")
             .configure(function(){}),
             worker = new salsify.Worker(s)
