@@ -1,6 +1,6 @@
 {
   "author": "Lucas Hrabovsky <lucas@ex.fm>",
-  "name": "node-salsify",
+  "name": "salsify",
   "description": "",
   "version": "0.0.0",
   "homepage": "http://github.com/exfm/node-salsify",
@@ -11,10 +11,12 @@
   "scripts": {
     "test": "mocha"
   },
-  "dependencies": {},
+  "dependencies": {
+    "nconf": "0.6.5",
+    "plata": "0.0.18"
+  },
   "devDependencies": {
-    "mocha": "1.4.1",
-    "chai": "1.2.0"
+    "mocha": "1.4.1"
   },
   "optionalDependencies": {},
   "engines": {
