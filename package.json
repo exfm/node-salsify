@@ -14,7 +14,8 @@
   "dependencies": {
     "nconf": "0.6.5",
     "plata": "0.0.18",
-    "node-uuid": "1.4.0"
+    "node-uuid": "1.4.0",
+    "winston": "0.6.2"
   },
   "devDependencies": {
     "mocha": "1.7.3"
