@@ -74,7 +74,7 @@ Worker.prototype.startListening = function(queue){
     this.salsify.backend.listen(queue, function(){
         self.log.silly('Backend listening.  Adding job event listener.');
         self.salsify.backend.on('job', function(data, cb){
-            self.log.silly('Got job from backend.  Bubbling up. ' + util.inspect(data, true, 5, false));
+            self.log.silly('Got job from backend.  Bubbling up. ');
             try{
                 self.emit('job', data, function(err, result){
                     cb(err, result);
