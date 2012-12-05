@@ -119,3 +119,12 @@ Worker.prototype.close = function(){
 };
 
 module.exports.Worker = Worker;
+
+module.exports.setLogLevel = function(level){
+    Object.keys(createLog.loggers).forEach(function(name){
+        createLog.loggers[name].transports.console.level = level;
+    });
+};
+module.exports.getLoggers = function(){
+    return createLog.loggers;
+};
