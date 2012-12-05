@@ -25,7 +25,9 @@ Salsify.prototype.configure = function(cb){
         self = this;
 
     function done(){
+        self.log.silly('Going to configure backend...');
         self.backend.configure(self, function(){
+            self.log.silly('Backend configured.  Sending ready.');
             self.ready = true;
             self.emit('ready');
         });
