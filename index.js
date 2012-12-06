@@ -3,14 +3,14 @@
 var util = require('util'),
     EventEmitter = require('events').EventEmitter,
     backends = require('./lib/backends'),
-    createLog = require('./lib/logging');
+    plog = require('plog');
 
 function Salsify(){
     this.ready = false;
     this.backend = new backends.sqs();
     this.key = undefined;
     this.secret = undefined;
-    this.log = createLog('salsify');
+    this.log = plog('salsify');
 }
 util.inherits(Salsify, EventEmitter);
 
@@ -60,7 +60,7 @@ module.exports.Salsify = Salsify;
 function Worker(parent){
     this.message = undefined;
     this.salsify = parent || salsify;
-    this.log = createLog('salsify.worker');
+    this.log = plog('salsify.worker');
 }
 util.inherits(Worker, EventEmitter);
 
@@ -123,10 +123,8 @@ Worker.prototype.close = function(){
 module.exports.Worker = Worker;
 
 module.exports.setLogLevel = function(level){
-    Object.keys(createLog.loggers).forEach(function(name){
-        createLog.loggers[name].transports.console.level = level;
-    });
+    plog.find(/^salsify/).level(level);
 };
 module.exports.getLoggers = function(){
-    return createLog.loggers;
+    return plog.find(/^salsify/).loggers;
 };
