@@ -42,13 +42,16 @@ Salsify.prototype.configure = function(cb){
     return this;
 };
 
-Salsify.prototype.delay = function(queue, data){
+Salsify.prototype.delay = function(queue, data, delaySeconds){
+    if(delaySeconds === undefined){
+        delaySeconds = 0;
+    }
     this.log.silly('Enqueuing message on `' + queue + '`: ' + util.inspect(data, true, 5, false));
     if(!this.ready){
-        this.on('ready', this.delay(queue, data).bind(this));
+        this.on('ready', this.delay(queue, data, delaySeconds).bind(this));
     }
     else{
-        this.backend.put(queue, data);
+        this.backend.put(queue, data, delaySeconds);
     }
     return this;
 };

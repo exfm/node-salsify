@@ -16,7 +16,7 @@
     "plata": "0.0.21",
     "node-uuid": "1.4.0",
     "winston": "0.6.2",
-    "plog": "0.0.3"
+    "plog": "0.0.4"
   },
   "devDependencies": {
     "mocha": "1.7.3"

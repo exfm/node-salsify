@@ -12,9 +12,10 @@ describe('SQS', function(){
     it("should work with a simple delay / pull", function(done){
         var s = new salsify.Salsify()
             .use("sqs")
-            .configure(function(){
+            .configure(function(done){
                 this.key = config.key;
                 this.secret = config.secret;
+                done();
             }),
             worker = new salsify.Worker(s)
                 .on('job', function(data, d){
