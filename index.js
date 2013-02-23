@@ -46,7 +46,7 @@ Salsify.prototype.delay = function(queue, data, delaySeconds){
     if(delaySeconds === undefined){
         delaySeconds = 0;
     }
-    this.log.silly('Enqueuing message on `' + queue + '`: ' + util.inspect(data, true, 5, false));
+    this.log.silly('Enqueuing message on `' + queue + '`: ' + util.inspect(data, true, 5, false) + ' with delay ' + delaySeconds);
     if(!this.ready){
         this.on('ready', this.delay(queue, data, delaySeconds).bind(this));
     }
